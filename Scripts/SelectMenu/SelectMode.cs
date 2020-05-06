@@ -12,7 +12,6 @@ using UnityEngine;
 using Zenject;
 using Twelve.Utils;
 using UniRx.Async.Triggers;
-using UnityEngine.WSA;
 
 /// <summary>
 /// modeを選択している

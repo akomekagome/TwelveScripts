@@ -127,7 +127,7 @@ namespace Twelve.Game.Mangers
             if (!(toTile != null && (toTile.Level != fromTile.Level || toTile.Level >= 12)))
             {
                 // astarの呼び出し
-                var isMovable = await SearchRouteAsync(selectedCoordinates.ToArray());
+                var isMovable = SearchRouteAsync(selectedCoordinates.ToArray());
 
                 if (isMovable)
                 {
@@ -156,7 +156,7 @@ namespace Twelve.Game.Mangers
                     // 動きが終了した後タイル生成を呼び出し
                     tileSpawner.CreateNTile(toTile == null ? 2 : 1);
                     // 終了判定を呼び出し
-                    var isFinish = await CheckFinishPuzzle();
+                    var isFinish = CheckFinishPuzzle();
                     if (isFinish)
                     {
                         finishPuzzleSubject.OnNext(Unit.Default);
@@ -172,7 +172,7 @@ namespace Twelve.Game.Mangers
         }
 
         // astarを呼び出してその判定を返す
-        private async UniTask<bool> SearchRouteAsync(params Vector2Int[] vector2ints)
+        private bool SearchRouteAsync(params Vector2Int[] vector2ints)
         {
             result.Clear();
             
@@ -182,12 +182,11 @@ namespace Twelve.Game.Mangers
                     .Where(v => !vector2ints.Contains(v))
                     .ToList();
             
-            return await UniTask
-                .Run(() => routeProvider.SearchRoute(vector2ints[0], vector2ints[1], result, lockList));
+            return routeProvider.SearchRoute(vector2ints[0], vector2ints[1], result, lockList);
         }
         
         // 終了判定
-        private async UniTask<bool> CheckFinishPuzzle()
+        private bool CheckFinishPuzzle()
         {
             var frontTiles = tileSpawner.FrontTiles;
             var length = frontTiles.Count;
@@ -198,7 +197,7 @@ namespace Twelve.Game.Mangers
             for (var i = 0; i < length; i++)
                 for (var j = i + 1; j < length; j++)
                     if (frontTiles[i].Level == frontTiles[j].Level)
-                        if(await SearchRouteAsync(frontTiles[i].Coordinates, frontTiles[j].Coordinates))
+                        if(SearchRouteAsync(frontTiles[i].Coordinates, frontTiles[j].Coordinates))
                             return false; 
             return true;
         }
